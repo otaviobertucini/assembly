@@ -9,16 +9,15 @@ b start
 	mov r0, #3
 	mov r5, #0
 
-
 start:	swi 0x206	@clean display
-	mov r6, #0
-
-loop:	mov r1, #0
+	mov r5, #0	@x-axis cursor
+	mov r6, #0	@y-axis cursor
 	mov r0, r5
-	mov r2, #'#
-	@swi 0x207
+	mov r1, r6
+	mov r2, #'-
+	swi 0x207
 
-	swi 0x203	@keyboard check
+loop:	swi 0x203	@keyboard check
 	cmp r0,#512
 	beq dw_arr
 	cmp r0,#2
@@ -35,37 +34,47 @@ loop:	mov r1, #0
 	beq right
 	b comp
 
-dw_arr: ldr r2, =M3	@down arrow pressed
-	mov r0, #6
-	mov r1, #3
-	swi 0x204
-	b comp
+dw_arr: mov r0, r5
+	mov r1, r6
+	mov r2, #' 
+	swi 0x207
+	add r6, r6, #1 	@down arrow pressed
+	b move
 
-up_arr: ldr r2, =M4	@up arrow pressed
-	mov r0, #6
-	mov r1, #4
-	swi 0x204
-	b comp
+up_arr: mov r0, r5
+	mov r1, r6
+	mov r2, #' 
+	swi 0x207
+	sub r6, r6, #1 	@down arrow pressed
+	b move
 
-lf_arr: ldr r2, =M1	@left arrow pressed
-	mov r0, #6
-	mov r1, #2
-	swi 0x204
-	b comp
+lf_arr: mov r0, r5
+	mov r1, r6
+	mov r2, #' 
+	swi 0x207
+	sub r5, r5, #1 	@left arrow pressed
+	b move
 
-rg_arr: ldr r2, =M2	@right arrow pressed
-	mov r0, #6
-	mov r1, #1
-	swi 0x204
-	b comp
+rg_arr: mov r0, r5
+	mov r1, r6
+	mov r2, #' 
+	swi 0x207
+	add r5, r5, #1 	@right arrow pressed
+	b move
 
 left: 	swi 0x206 	@left button pressed (clear display)
 	b comp
 
 right: 	b comp		@right button pressed
 
-comp:	cmp r6, #0
-	add r5, r5, #1
+move: 	mov r0, r5
+	mov r1, r6
+	mov r2, #'-
+	swi 0x207
+	b comp
+
+comp:	mov r7, #0
+	cmp r7, #0
 	beq loop
 
 end: b end
