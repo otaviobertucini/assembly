@@ -8,6 +8,7 @@ b start
 	mov r6, #0
 	mov r0, #3
 	mov r5, #0
+	mov r4, #0 	@character selected
 
 start:	swi 0x206	@clean display
 	mov r5, #0	@x-axis cursor
@@ -26,6 +27,16 @@ loop:	swi 0x203	@keyboard check
 	beq lf_arr
 	cmp r0, #64
 	beq rg_arr
+	cmp r0, #24
+	beq sl_spc
+	cmp r0, #128
+	beq sl_has
+	cmp r0, #2048
+	beq sl_ast
+	cmp r0, #32768
+	beq sl_hif
+	cmp r0, #16384
+	beq sl_bal
 
 	swi 0x202	@button check
 	cmp r0, #1	
@@ -62,8 +73,23 @@ rg_arr: mov r0, r5
 	add r5, r5, #1 	@right arrow pressed
 	b move
 
-left: 	swi 0x206 	@left button pressed (clear display)
+sl_spc: mov r4, #0
 	b comp
+
+sl_has:	mov r4, #1
+	b comp
+
+sl_ast:	mov r4, #2
+	b comp
+
+sl_hif:	mov r4, #3
+	b comp
+
+sl_bal:	mov r4, #4
+	b comp
+
+left: 	swi 0x206 	@left button pressed (clear display)
+	b move
 
 right: 	b comp		@right button pressed
 
