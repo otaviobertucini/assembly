@@ -27,7 +27,7 @@ loop:	swi 0x203	@keyboard check
 	beq lf_arr
 	cmp r0, #64
 	beq rg_arr
-	cmp r0, #24
+	cmp r0, #8
 	beq sl_spc
 	cmp r0, #128
 	beq sl_has
@@ -45,32 +45,24 @@ loop:	swi 0x203	@keyboard check
 	beq right
 	b comp
 
-dw_arr: mov r0, r5
-	mov r1, r6
-	mov r2, #' 
-	swi 0x207
-	add r6, r6, #1 	@down arrow pressed
+dw_arr: mov r3, #1
+	b print
+con_dw:	add r6, r6, #1 	@down arrow pressed
+	b move	
+
+up_arr: mov r3, #2
+	b print
+con_up:	sub r6, r6, #1 	@down arrow pressed
 	b move
 
-up_arr: mov r0, r5
-	mov r1, r6
-	mov r2, #' 
-	swi 0x207
-	sub r6, r6, #1 	@down arrow pressed
+lf_arr: mov r3, #3
+	b print
+con_lf:	sub r5, r5, #1 	
 	b move
 
-lf_arr: mov r0, r5
-	mov r1, r6
-	mov r2, #' 
-	swi 0x207
-	sub r5, r5, #1 	@left arrow pressed
-	b move
-
-rg_arr: mov r0, r5
-	mov r1, r6
-	mov r2, #' 
-	swi 0x207
-	add r5, r5, #1 	@right arrow pressed
+rg_arr: mov r3, #4
+	b print
+con_rg:	add r5, r5, #1 	
 	b move
 
 sl_spc: mov r4, #0
@@ -92,6 +84,34 @@ left: 	swi 0x206 	@left button pressed (clear display)
 	b move
 
 right: 	b comp		@right button pressed
+
+print:	cmp r4, #0
+	mov r2, #' 
+	beq ptr_sc
+	cmp r4, #1
+	mov r2, #'#
+	beq ptr_sc
+	cmp r4, #2
+	mov r2, #'*
+	beq ptr_sc
+	cmp r4, #3
+	mov r2, #'-
+	beq ptr_sc
+	cmp r4, #4
+	mov r2, #'o
+
+ptr_sc:	mov r0, r5	
+	mov r1, r6
+	swi 0x207
+
+	cmp r3, #1
+	beq con_dw
+	cmp r3, #2
+	beq con_up
+	cmp r3, #3
+	beq con_lf
+	cmp r3, #4
+	beq con_rg
 
 move: 	mov r0, r5
 	mov r1, r6
