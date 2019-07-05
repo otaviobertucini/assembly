@@ -66,18 +66,28 @@ con_rg:	add r5, r5, #1
 	b move
 
 sl_spc: mov r4, #0
+	mov r0, #0x01	
+	swi 0x201
 	b comp
 
 sl_has:	mov r4, #1
+	mov r0,#0x02
+	swi 0x201
 	b comp
 
 sl_ast:	mov r4, #2
+	mov r0,#0x02
+	swi 0x201
 	b comp
 
 sl_hif:	mov r4, #3
+	mov r0,#0x02
+	swi 0x201
 	b comp
 
 sl_bal:	mov r4, #4
+	mov r0,#0x02
+	swi 0x201
 	b comp
 
 left: 	swi 0x206 	@left button pressed (clear display)
@@ -86,8 +96,8 @@ left: 	swi 0x206 	@left button pressed (clear display)
 right: 	b comp		@right button pressed
 
 print:	cmp r4, #0
-	mov r2, #' 
-	beq ptr_sc
+	mov r2, #' 		
+	beq ptr_sc	
 	cmp r4, #1
 	mov r2, #'#
 	beq ptr_sc
@@ -100,7 +110,8 @@ print:	cmp r4, #0
 	cmp r4, #4
 	mov r2, #'o
 
-ptr_sc:	mov r0, r5	
+ptr_sc:	
+	mov r0, r5	
 	mov r1, r6
 	swi 0x207
 
